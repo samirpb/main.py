@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI(title="API Tareas - Samir Perez")
@@ -29,3 +29,11 @@ def crear_tarea(tarea: Tarea):
     }
     tareas_db.append(nueva_tarea)
     return nueva_tarea
+
+@app.delete("/tareas/{tarea_id}")
+def borrar_tarea(tarea_id: int):
+    for tarea in tareas_db:
+        if tarea["id"] == tarea_id:
+            tareas_db.remove(tarea)
+            return {"mensaje": f"Tarea {tarea_id} borrada correctamente"}
+    raise HTTPException(status_code=404, detail="Tarea no encontrada")
